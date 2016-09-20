@@ -10,6 +10,8 @@ also requires PHP 5.3+ due to the use of namespaced code.
 ## Installation
 Include the file `gui.php` from your `sunrise.php` in the same way you include Mercator itself.
 
+**NOTE** include `gui.php` before `mercator.php` itself!
+
 For example:
 
 ```php
@@ -17,8 +19,8 @@ For example:
 // Default mu-plugins directory if you haven't set it
 defined( 'WPMU_PLUGIN_DIR' ) or define( 'WPMU_PLUGIN_DIR', WP_CONTENT_DIR . '/mu-plugins' );
 
-require WPMU_PLUGIN_DIR . '/mercator/mercator.php';
 require WPMU_PLUGIN_DIR . '/mercator-gui/gui.php';
+require WPMU_PLUGIN_DIR . '/mercator/mercator.php';
 ```
 
 ## License
