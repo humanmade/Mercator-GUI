@@ -5,7 +5,7 @@
  * @package Mercator
  */
 
-namespace Mercator\Admin;
+namespace Mercator\GUI;
 
 use Mercator\Mapping;
 use WP_Error;
