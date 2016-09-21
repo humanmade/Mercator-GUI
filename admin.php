@@ -31,16 +31,18 @@ function enqueue_scripts( $hook ) {
 	}
 
 	$data = array(
-		'api'     => admin_url( '/admin-ajax.php' ),
-		'nonce'   => wp_create_nonce( 'mercator-gui' ),
-		'aliases' => array_map( function ( $mapping ) {
-			return array(
-				'id'     => absint( $mapping->get_id() ),
-				'domain' => $mapping->get_domain(),
-				'active' => $mapping->is_active(),
-			);
-		}, Mapping::get_by_site( get_current_blog_id() ) ),
-		'site'    => get_site( get_current_blog_id() ),
+		'api'   => admin_url( '/admin-ajax.php' ),
+		'nonce' => wp_create_nonce( 'mercator-gui' ),
+		'data'  => array(
+			'aliases' => array_map( function ( $mapping ) {
+				return array(
+					'id'     => absint( $mapping->get_id() ),
+					'domain' => $mapping->get_domain(),
+					'active' => $mapping->is_active(),
+				);
+			}, Mapping::get_by_site( get_current_blog_id() ) ),
+			'site'    => get_site( get_current_blog_id() ),
+		),
 	);
 
 	wp_enqueue_script( 'mercator-gui', plugins_url( 'assets/js/gui.js', __FILE__ ), array( 'jquery', 'backbone', 'underscore' ), VERSION, true );
@@ -57,7 +59,7 @@ function handle_ajax() {
 		return;
 	}
 
-	switch( $_REQUEST['doAction'] ) {
+	switch ( $_REQUEST['doAction'] ) {
 		case 'fetch':
 			$aliases = array_map( function ( $mapping ) {
 				return array(

@@ -25,13 +25,11 @@
 	</div>
 </script>
 <script type="text/template" id="tmpl-mercator-alias">
-	<li class="mercator-alias">
-		<input class="mercator-alias-domain" type="text" pattern="([a-z0-9]+\.)?([a-z0-9_-]+\.[a-z]+)(\.[a-z]+)" value="<%- domain %>" />
-		<button class="mercator-alias-update button button-primary"><?php esc_html_e( 'Update', 'mercator' ); ?></button>
-		<label>
-			<input class="mercator-alias-active" type="checkbox" value="1" />
-			<?php esc_html_e( 'Active', 'mercator' ); ?>
-		</label>
-		<button class="mercator-alias-delete button button-secondary deletion"><?php esc_html_e( 'Delete', 'mercator' ); ?></button>
-	</li>
+	<input class="mercator-alias-domain" type="text" pattern="([a-z0-9]+\.)?([a-z0-9_-]+\.[a-z]+)(\.[a-z]+)" value="<%- domain %>" />
+	<button class="mercator-alias-update button button-primary"><?php esc_html_e( 'Update', 'mercator' ); ?></button>
+	<label>
+		<input class="mercator-alias-active" type="checkbox" <%= active ? 'checked' : '' %> />
+		<?php esc_html_e( 'Active', 'mercator' ); ?>
+	</label>
+	<button class="mercator-alias-delete button button-secondary deletion"><?php esc_html_e( 'Delete', 'mercator' ); ?></button>
 </script>
