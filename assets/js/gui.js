@@ -7,7 +7,7 @@ var ESC_KEY   = 27;
   'use strict';
 
   mercator.Alias = Backbone.Model.extend( {
-    // Default attributes for the alias
+
     defaults: {
       id    : 0,
       domain: '',
@@ -117,12 +117,38 @@ var ESC_KEY   = 27;
 
   } );
 
+  mercator.Primary = Backbone.Model.extend( {
+    defaults: {
+      blog_id: 0,
+      domain : '',
+      site_id: 0,
+      path   : '/'
+    }
+  } );
+
+  mercator.PrimaryView = Backbone.View.extend( {
+
+    tagName  : 'div',
+    className: 'mercator-primary-domain',
+
+    template: _.template( $( '#tmpl-mercator-primary-domain' ).html() ),
+
+    initialize: function() {
+
+    },
+
+    render: function() {
+      this.$el.html( this.template( this.model.toJSON() ) );
+      return this;
+    },
+
+  } );
+
   mercator.GUI = Backbone.View.extend( {
 
     el: '.mercator-gui',
 
-    template       : _.template( $( '#tmpl-mercator-gui' ).html() ),
-    templatePrimary: _.template( $( '#tmpl-mercator-primary-domain' ).html() ),
+    template: _.template( $( '#tmpl-mercator-gui' ).html() ),
 
     // Delegated events for creating new items, and clearing completed ones.
     events: {
@@ -130,24 +156,27 @@ var ESC_KEY   = 27;
     },
 
     initialize: function() {
+      // Get one off primary domain view
+      this.primaryModel  = new mercator.Primary( mercator.data.site );
+      this.primaryDomain = new mercator.PrimaryView( { model: this.primaryModel } );
+
       // Create markup
       this.render();
 
-      this.$list = this.$( '.mercator-alias-list' );
+      this.$list    = this.$( '.mercator-alias-list' );
+      this.$primary = this.$( '.mercator-primary-domain' );
 
       this.listenTo( mercator.Aliases, 'add', this.addAlias );
       this.listenTo( mercator.Aliases, 'reset', this.addAll );
+      this.listenTo( mercator.Primary, 'change', this.updatePrimary );
 
       // Populate initial data
       mercator.Aliases.reset( mercator.data.aliases );
     },
 
     render: function() {
-
-      this.$el.html( this.template( {
-        primary: this.templatePrimary( mercator.data.site )
-      } ) );
-
+      this.$el.html( this.template() );
+      this.$el.prepend( this.primaryDomain.render().el );
       return this;
     },
 
@@ -156,10 +185,13 @@ var ESC_KEY   = 27;
       this.$list.append( view.render().el );
     },
 
-    // Add all items in the **Aliases** collection at once.
     addAll: function() {
       this.$list.html( '' );
       mercator.Aliases.each( this.addAlias, this );
+    },
+
+    updatePrimary: function() {
+      console.log(arguments);
     }
 
   } );

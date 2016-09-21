@@ -11,18 +11,15 @@
 </div>
 
 <script type="text/template" id="tmpl-mercator-gui">
-	<%= primary %>
 	<ul class="mercator-alias-list"></ul>
 	<button class="mercator-alias-add button button-primary"><?php esc_html_e( 'Add an alias', 'mercator' ); ?></button>
 </script>
 <script type="text/template" id="tmpl-mercator-primary-domain">
-	<div class="mercator-primary-domain">
-		<h2><%= domain %></h2>
-		<p>
-			<strong><?php esc_html_e( 'Primary domain', 'mercator' ); ?></strong>,
-			<?php esc_html_e( 'the domains listed below will redirect to this one' ) ?>
-		</p>
-	</div>
+	<h2><%= domain %></h2>
+	<p>
+		<strong><?php esc_html_e( 'Primary domain', 'mercator' ); ?></strong>,
+		<?php esc_html_e( 'the domains listed below will redirect to this one' ) ?>
+	</p>
 </script>
 <script type="text/template" id="tmpl-mercator-alias">
 	<input class="mercator-alias-domain" type="text" pattern="([a-z0-9]+\.)?([a-z0-9_-]+\.[a-z]+)(\.[a-z]+)" value="<%- domain %>" />
