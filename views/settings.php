@@ -11,22 +11,25 @@
 </div>
 
 <script type="text/template" id="tmpl-mercator-gui">
+	<div class="mercator-errors"></div>
 	<ul class="mercator-alias-list"></ul>
 	<button class="mercator-alias-add button button-primary"><?php esc_html_e( 'Add an alias', 'mercator' ); ?></button>
 </script>
 <script type="text/template" id="tmpl-mercator-primary-domain">
-	<h2><%= domain %></h2>
 	<p>
-		<strong><?php esc_html_e( 'Primary domain', 'mercator' ); ?></strong>,
+		<strong><?php esc_html_e( 'Your primary domain', 'mercator' ); ?></strong>,
 		<?php esc_html_e( 'the domains listed below will redirect to this one' ) ?>
 	</p>
+	<h2><%= domain %></h2>
 </script>
 <script type="text/template" id="tmpl-mercator-alias">
-	<input class="mercator-alias-domain" type="text" pattern="([a-z0-9]+\.)?([a-z0-9_-]+\.[a-z]+)(\.[a-z]+)" value="<%- domain %>" />
-	<button class="mercator-alias-update button button-primary"><?php esc_html_e( 'Update', 'mercator' ); ?></button>
-	<label>
-		<input class="mercator-alias-active" type="checkbox" <%= active ? 'checked' : '' %> />
-		<?php esc_html_e( 'Active', 'mercator' ); ?>
-	</label>
-	<button class="mercator-alias-delete button button-secondary deletion"><?php esc_html_e( 'Delete', 'mercator' ); ?></button>
+	<input class="mercator-alias-domain" type="text" placeholder="<?php esc_attr_e( 'example.com, hit Enter to save', 'mercator' ); ?>" pattern="([a-z0-9]+\.)?([a-z0-9_-]+\.[a-z]+)(\.[a-z]+)" value="<%- domain %>" />
+	<span class="mercator-alias-controls">
+		<label class="mercator-alias-active-label">
+			<input class="mercator-alias-active" type="checkbox" <%= active ? 'checked' : '' %> />
+			<?php esc_html_e( 'Active', 'mercator' ); ?>
+		</label>
+		<button class="mercator-alias-update button button-primary"><?php esc_html_e( 'Update', 'mercator' ); ?></button>
+		<button class="mercator-alias-delete button button-secondary deletion"><?php esc_html_e( 'Delete', 'mercator' ); ?></button>
+	</span>
 </script>

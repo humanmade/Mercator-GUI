@@ -3,13 +3,12 @@
 namespace Mercator\GUI;
 
 use Mercator\Mapping;
-use WP_Error;
 
 const VERSION = '0.1';
 
 add_action( 'admin_menu', __NAMESPACE__ . '\\menu_item' );
 add_action( 'admin_enqueue_scripts', __NAMESPACE__ . '\\enqueue_scripts' );
-add_action( 'wp_ajax_mercator', __NAMESPACE__ . '\\handle_ajax' );
+add_action( 'wp_ajax_mercator-gui', __NAMESPACE__ . '\\handle_ajax' );
 
 function menu_item() {
 	add_options_page(
@@ -30,45 +29,50 @@ function enqueue_scripts( $hook ) {
 		return;
 	}
 
+	// Initial data object, for fast loading fun times
 	$data = array(
 		'api'   => admin_url( '/admin-ajax.php' ),
-		'nonce' => wp_create_nonce( 'mercator-gui' ),
+		'nonce' => wp_create_nonce( 'wp_rest' ),
 		'data'  => array(
-			'aliases' => array_map( function ( $mapping ) {
-				return array(
-					'id'     => absint( $mapping->get_id() ),
-					'domain' => $mapping->get_domain(),
-					'active' => $mapping->is_active(),
-				);
-			}, Mapping::get_by_site( get_current_blog_id() ) ),
+			'aliases' => array_map(
+				__NAMESPACE__ . '\\mapping_to_array',
+				Mapping::get_by_site( get_current_blog_id() )
+			),
 			'site'    => get_site( get_current_blog_id() ),
+		),
+		'l10n'  => array(
+			'domainError' => __( 'Domain cannot be empty and must be a valid host name', 'mercator' ),
 		),
 	);
 
-	wp_enqueue_script( 'mercator-gui', plugins_url( 'assets/js/gui.js', __FILE__ ), array( 'jquery', 'backbone', 'underscore' ), VERSION, true );
-	wp_add_inline_script( 'mercator-gui', sprintf(
-		'<script>var mercator = %s;</script>',
-		wp_json_encode( $data )
-	), 'before' );
+	wp_enqueue_style(
+		'mercator-gui',
+		plugins_url( 'assets/css/gui.css', __FILE__ ),
+		array(),
+		VERSION
+	);
+
+	wp_enqueue_script(
+		'mercator-gui',
+		plugins_url( 'assets/js/gui.js', __FILE__ ),
+		array( 'jquery', 'backbone', 'underscore' ),
+		VERSION,
+		true
+	);
+
+	wp_add_inline_script(
+		'mercator-gui',
+		sprintf(
+			'<script>var mercator = %s;</script>',
+			wp_json_encode( $data )
+		), 'before'
+	);
 }
 
-function handle_ajax() {
-	check_ajax_referer( 'mercator-gui' );
-
-	if ( ! isset( $_REQUEST['doAction'] ) ) {
-		return;
-	}
-
-	switch ( $_REQUEST['doAction'] ) {
-		case 'fetch':
-			$aliases = array_map( function ( $mapping ) {
-				return array(
-					'id'     => absint( $mapping->get_id() ),
-					'domain' => $mapping->get_domain(),
-					'active' => $mapping->is_active(),
-				);
-			}, Mapping::get_by_site( get_current_blog_id() ) );
-			wp_send_json( $aliases );
-			break;
-	}
+function mapping_to_array( $mapping ) {
+	return array(
+		'id'     => absint( $mapping->get_id() ),
+		'domain' => $mapping->get_domain(),
+		'active' => $mapping->is_active(),
+	);
 }

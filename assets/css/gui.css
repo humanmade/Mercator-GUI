@@ -1,0 +1,39 @@
+.mercator-primary-domain {
+	margin: 20px 0;
+}
+
+.mercator-primary-domain h2 {
+	font-size: 220%;
+	margin-top: 10px;
+}
+
+.mercator-primary-domain p {
+	font-style: italic;
+	margin-bottom: 0;
+}
+
+.mercator-alias {
+	margin: 15px 0;
+}
+
+.mercator-alias-domain {
+	width: 60%;
+	font-size: 140%;
+	padding: 10px;
+	margin-right: 5px;
+	vertical-align: middle;
+}
+
+.mercator-alias-controls {
+	overflow: hidden;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.mercator-alias-active-label {
+	margin: 0 20px 0 5px;
+}
+
+.mercator-alias button {
+	margin: 0 10px;
+}
