@@ -28,6 +28,8 @@ var mercator = mercator || {};
           method     : method.toUpperCase()
         }, options );
 
+    model.trigger( 'request', model, method );
+
     $.ajax( opts );
   };
 
@@ -126,7 +128,6 @@ var mercator = mercator || {};
         return;
       }
 
-      this.onRequest();
       this.model.save( {
         domain: this.$domain.val()
       }, {
@@ -139,7 +140,6 @@ var mercator = mercator || {};
         active: this.$active.is( ':checked' )
       } );
       if ( !this.model.isNew() ) {
-        this.onRequest();
         this.model.save( null, {
           patch: true
         } );
