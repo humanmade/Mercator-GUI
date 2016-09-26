@@ -1,5 +1,7 @@
 var mercator = mercator || {};
 
+var ENTER_KEY = 13;
+
 (function( $ ) {
   'use strict';
 
@@ -125,6 +127,9 @@ var mercator = mercator || {};
       this.hideError();
 
       if ( 'keyup' === e.type && e.key && e.key !== 'Enter' ) {
+        return;
+      }
+      if ( 'keyup' === e.type && e.keyCode && e.keyCode !== ENTER_KEY ) {
         return;
       }
 
