@@ -41,6 +41,7 @@ function enqueue_scripts( $hook ) {
 			'site'    => get_site( get_current_blog_id() ),
 		),
 		'l10n'  => array(
+			'areYouSure'  => __( 'Are you sure?', 'mercator' ),
 			'domainError' => __( 'Domain cannot be empty and must be a valid host name', 'mercator' ),
 		),
 	);

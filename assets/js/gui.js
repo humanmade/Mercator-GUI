@@ -1,7 +1,5 @@
 var mercator = mercator || {};
 
-var ENTER_KEY = 13;
-
 (function( $ ) {
   'use strict';
 
@@ -13,15 +11,21 @@ var ENTER_KEY = 13;
     method = 'update' === method ? 'put' : method;
 
     var data = model.toJSON(),
-        url  = '/wp-json/mercator/v1/mappings' +
+        url  = model.collection.url +
           ( _.isObject( data ) && data.id ? '/' + data.id : '' ),
         opts = _.extend( {
-          url       : url,
-          beforeSend: function( xhr ) {
+          url        : url,
+          beforeSend : function( xhr ) {
             xhr.setRequestHeader( 'X-WP-Nonce', mercator.nonce );
           },
-          data      : model.toJSON(),
-          method    : method.toUpperCase()
+          dataType   : 'json',
+          contentType: 'application/json',
+          data       : JSON.stringify(
+            'patch' === method ?
+              model.changedAttributes() :
+              model.toJSON()
+          ),
+          method     : method.toUpperCase()
         }, options );
 
     $.ajax( opts );
@@ -37,7 +41,6 @@ var ENTER_KEY = 13;
     },
 
     validate: function( attrs, options ) {
-      console.log( attrs, options )
       if ( !attrs.domain || !attrs.domain.match( /[a-z0-9._-]+\.[a-z0-9._-]+/i ) ) {
         return {
           attribute: 'domain',
@@ -57,12 +60,8 @@ var ENTER_KEY = 13;
     // Reference to this collection's model.
     model: mercator.Alias,
 
-    // Filter down the list of all todo items that are finished.
-    active: function() {
-      return this.where( {
-        active: true
-      } );
-    }
+    // Sort by id
+    comparator: 'id'
 
   } );
 
@@ -78,12 +77,13 @@ var ENTER_KEY = 13;
     events: {
       'click .mercator-alias-update': 'updateAlias',
       'click .mercator-alias-active': 'toggleAlias',
-      'click .mercator-alias-delete': 'deleteAlias',
+      'click .mercator-alias-delete': 'areYouSure',
+      'click .mercator-alias-ays'   : 'deleteAlias',
+      'click .mercator-alias-cancel': 'cancelDelete',
       'keyup .mercator-alias-domain': 'updateAlias'
     },
 
     initialize: function() {
-      this.listenTo( this.model, 'change', this.render );
       this.listenTo( this.model, 'invalid', this.showError );
       this.listenTo( this.model, 'request', this.onRequest );
       this.listenTo( this.model, 'sync', this.onSync );
@@ -94,21 +94,39 @@ var ENTER_KEY = 13;
       this.$domain = this.$( '.mercator-alias-domain' );
       this.$active = this.$( '.mercator-alias-active' );
       this.$update = this.$( '.mercator-alias-update' );
+      this.$ays    = this.$( '.mercator-alias-ays' );
+      this.$delete = this.$( '.mercator-alias-delete' );
+      this.$cancel = this.$( '.mercator-alias-cancel' );
       return this;
     },
 
+    areYouSure: function() {
+      this.$delete.hide();
+      this.$ays.show();
+      this.$cancel.show();
+    },
+
     deleteAlias: function() {
-      this.$el.remove();
       this.model.destroy();
+      this.$el.fadeOut( 200, function() {
+        $( this ).remove();
+      } );
+    },
+
+    cancelDelete: function() {
+      this.$delete.show();
+      this.$ays.hide();
+      this.$cancel.hide();
     },
 
     updateAlias: function( e ) {
       this.hideError();
 
-      if ( e.type === 'keyup' && ( (e.which && e.which !== ENTER_KEY) || (e.key && e.key !== 'Enter') ) ) {
+      if ( 'keyup' === e.type && e.key && e.key !== 'Enter' ) {
         return;
       }
 
+      this.onRequest();
       this.model.save( {
         domain: this.$domain.val()
       }, {
@@ -117,10 +135,12 @@ var ENTER_KEY = 13;
     },
 
     toggleAlias: function() {
+      this.model.set( {
+        active: this.$active.is( ':checked' )
+      } );
       if ( !this.model.isNew() ) {
-        this.model.save( {
-          active: this.$active.is( ':checked' )
-        }, {
+        this.onRequest();
+        this.model.save( null, {
           patch: true
         } );
       }
@@ -146,11 +166,11 @@ var ENTER_KEY = 13;
     },
 
     onRequest: function() {
-      this.$update.attr( 'disabled', 'disabled' );
+      this.$el.find( 'button, input' ).attr( 'disabled', 'disabled' ).addClass( 'disabled' );
     },
 
     onSync: function() {
-      this.$update.removeAttr( 'disabled' );
+      this.$el.find( 'button, input' ).removeAttr( 'disabled' ).removeClass( 'disabled' );
     }
 
   } );
