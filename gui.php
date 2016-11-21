@@ -9,15 +9,17 @@
 
 namespace Mercator\GUI;
 
-use Mercator\REST_API;
-
 /**
  * Current version of Mercator GUI.
  */
 const VERSION = '0.1';
 
 add_action( 'mercator_load', __NAMESPACE__ . '\\admin_init' );
-add_action( 'rest_api_init', __NAMESPACE__ . '\\rest_api_init' );
+
+/**
+ * Load REST API.
+ */
+require_once 'inc/api/api.php';
 
 function is_enabled() {
 	/**
@@ -69,18 +71,4 @@ function load_admin() {
 function load_network_admin() {
 	require_once __DIR__ . '/network-admin.php';
 	require_once __DIR__ . '/inc/admin/class-alias-list-table.php';
-}
-
-/**
- * Load REST Controller
- */
-function rest_api_init() {
-	if ( class_exists( 'Mercator\API' ) ) {
-		return;
-	}
-	require_once __DIR__ . '/inc/api/class-rest-api.php';
-
-	// Comments.
-	$controller = new REST_API;
-	$controller->register_routes();
 }

@@ -31,6 +31,7 @@
 		</label>
 		<button class="mercator-alias-update button button-primary"><?php esc_html_e( 'Update', 'mercator' ); ?></button>
 		<button class="mercator-alias-delete button button-secondary"><?php esc_html_e( 'Delete', 'mercator' ); ?></button>
+		<button class="mercator-alias-make-primary button button-primary"><?php esc_html_e( 'Make primary', 'mercator' ); ?></button>
 		<button class="mercator-alias-ays button button-secondary" style="display:none"><?php esc_html_e( 'Are you sure?', 'mercator' ); ?></button>
 		<button class="mercator-alias-cancel button button-secondary" style="display:none"><?php esc_html_e( 'Cancel', 'mercator' ); ?></button>
 	</span>

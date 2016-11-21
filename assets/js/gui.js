@@ -2,10 +2,17 @@ var mercator = mercator || {};
 
 var ENTER_KEY = 13;
 
-(function( $ ) {
+(function ( $ ) {
   'use strict';
 
-  mercator.sync = function( method, model, options ) {
+  /**
+   * Custom sync method, map methods to our REST API
+   *
+   * @param method
+   * @param model
+   * @param options
+   */
+  mercator.sync = function ( method, model, options ) {
 
     // Map backbone methods
     method = 'create' === method ? 'post' : method;
@@ -13,11 +20,11 @@ var ENTER_KEY = 13;
     method = 'update' === method ? 'put' : method;
 
     var data = model.toJSON(),
-        url  = model.collection.url +
-          ( _.isObject( data ) && data.id ? '/' + data.id : '' ),
+        url  = ( model.collection ? model.collection.url : model.url ) +
+               ( _.isObject( data ) && data.id ? '/' + data.id : '' ),
         opts = _.extend( {
           url        : url,
-          beforeSend : function( xhr ) {
+          beforeSend : function ( xhr ) {
             xhr.setRequestHeader( 'X-WP-Nonce', mercator.nonce );
           },
           dataType   : 'json',
@@ -35,6 +42,9 @@ var ENTER_KEY = 13;
     $.ajax( opts );
   };
 
+  /**
+   * Alias model, collection & view
+   */
   mercator.Alias = Backbone.Model.extend( {
 
     sync: mercator.sync,
@@ -44,7 +54,7 @@ var ENTER_KEY = 13;
       active: false
     },
 
-    validate: function( attrs, options ) {
+    validate: function ( attrs, options ) {
       if ( !attrs.domain || !attrs.domain.match( /[a-z0-9._-]+\.[a-z0-9._-]+/i ) ) {
         return {
           attribute: 'domain',
@@ -79,21 +89,22 @@ var ENTER_KEY = 13;
     template: _.template( $( '#tmpl-mercator-alias' ).html() ),
 
     events: {
-      'click .mercator-alias-update': 'updateAlias',
-      'click .mercator-alias-active': 'toggleAlias',
-      'click .mercator-alias-delete': 'areYouSure',
-      'click .mercator-alias-ays'   : 'deleteAlias',
-      'click .mercator-alias-cancel': 'cancelDelete',
-      'keyup .mercator-alias-domain': 'updateAlias'
+      'click .mercator-alias-update'      : 'updateAlias',
+      'click .mercator-alias-active'      : 'toggleAlias',
+      'click .mercator-alias-delete'      : 'areYouSure',
+      'click .mercator-alias-ays'         : 'deleteAlias',
+      'click .mercator-alias-cancel'      : 'cancelDelete',
+      'click .mercator-alias-make-primary': 'makePrimary',
+      'keyup .mercator-alias-domain'      : 'updateAlias'
     },
 
-    initialize: function() {
+    initialize: function () {
       this.listenTo( this.model, 'invalid', this.showError );
       this.listenTo( this.model, 'request', this.onRequest );
       this.listenTo( this.model, 'sync', this.onSync );
     },
 
-    render: function() {
+    render: function () {
       this.$el.html( this.template( this.model.toJSON() ) );
       this.$domain = this.$( '.mercator-alias-domain' );
       this.$active = this.$( '.mercator-alias-active' );
@@ -104,26 +115,26 @@ var ENTER_KEY = 13;
       return this;
     },
 
-    areYouSure: function() {
+    areYouSure: function () {
       this.$delete.hide();
       this.$ays.show();
       this.$cancel.show();
     },
 
-    deleteAlias: function() {
+    deleteAlias: function () {
       this.model.destroy();
-      this.$el.fadeOut( 200, function() {
+      this.$el.fadeOut( 200, function () {
         $( this ).remove();
       } );
     },
 
-    cancelDelete: function() {
+    cancelDelete: function () {
       this.$delete.show();
       this.$ays.hide();
       this.$cancel.hide();
     },
 
-    updateAlias: function( e ) {
+    updateAlias: function ( e ) {
       this.hideError();
 
       if ( 'keyup' === e.type && e.key && e.key !== 'Enter' ) {
@@ -140,7 +151,7 @@ var ENTER_KEY = 13;
       } );
     },
 
-    toggleAlias: function() {
+    toggleAlias: function () {
       this.model.set( {
         active: this.$active.is( ':checked' )
       } );
@@ -151,7 +162,7 @@ var ENTER_KEY = 13;
       }
     },
 
-    showError: function( model, error ) {
+    showError: function ( model, error ) {
       this.$el
         .append(
           $( '<p/>', {
@@ -166,28 +177,60 @@ var ENTER_KEY = 13;
       }
     },
 
-    hideError: function() {
+    hideError: function () {
       this.$el.find( '.mercator-alias-error' ).remove();
     },
 
-    onRequest: function() {
+    onRequest: function () {
       this.$el.find( 'button, input' ).attr( 'disabled', 'disabled' ).addClass( 'disabled' );
     },
 
-    onSync: function() {
+    onSync: function () {
       this.$el.find( 'button, input' ).removeAttr( 'disabled' ).removeClass( 'disabled' );
+    },
+
+    makePrimary: function() {
+      this.$el.fadeOut(250);
+
+      mercator.PrimaryData.at(0).set( {
+        domain: this.model.get('domain')
+      } ).save( {
+        mapping: this.model.id
+      }, {
+        success: function() {
+          mercator.Aliases.fetch();
+        }
+      } );
+
     }
 
   } );
 
+  /**
+   * Primary domain model, collection & view
+   */
   mercator.Primary = Backbone.Model.extend( {
+
+    sync: mercator.sync,
+
     defaults: {
       blog_id: 0,
       domain : '',
       site_id: 0,
       path   : '/'
     }
+
   } );
+
+  var Primary = Backbone.Collection.extend( {
+
+    url: '/wp-json/mercator/v1/primary',
+
+    model: mercator.Primary
+
+  } );
+
+  mercator.PrimaryData = new Primary( [ mercator.data.site ] );
 
   mercator.PrimaryView = Backbone.View.extend( {
 
@@ -196,13 +239,21 @@ var ENTER_KEY = 13;
 
     template: _.template( $( '#tmpl-mercator-primary-domain' ).html() ),
 
-    render: function() {
+    initialize: function() {
+      this.listenTo( this.model, 'change', this.render );
+      this.listenTo( this.model, 'sync', this.render );
+    },
+
+    render: function () {
       this.$el.html( this.template( this.model.toJSON() ) );
       return this;
     }
 
   } );
 
+  /**
+   * Main GUI view
+   */
   mercator.GUI = Backbone.View.extend( {
 
     el: '.mercator-gui',
@@ -214,10 +265,9 @@ var ENTER_KEY = 13;
       'click .mercator-alias-add': 'newAlias'
     },
 
-    initialize: function() {
+    initialize: function () {
       // Get one off primary domain view
-      this.primaryModel  = new mercator.Primary( mercator.data.site );
-      this.primaryDomain = new mercator.PrimaryView( { model: this.primaryModel } );
+      this.primaryDomain = new mercator.PrimaryView( { model: mercator.PrimaryData.at(0) } );
 
       // Create markup
       this.render();
@@ -231,18 +281,18 @@ var ENTER_KEY = 13;
       mercator.Aliases.reset( mercator.data.aliases );
     },
 
-    render: function() {
+    render: function () {
       this.$el.html( this.template() );
       this.$el.prepend( this.primaryDomain.render().el );
       return this;
     },
 
-    newAlias: function() {
+    newAlias: function () {
       var alias = new mercator.Alias;
-      mercator.Aliases.push( alias ); // Using push so we don't
+      mercator.Aliases.push( alias ); // Using push so we don't render
     },
 
-    addAlias: function( alias ) {
+    addAlias: function ( alias ) {
       var view = new mercator.AliasView( { model: alias } );
       this.$list.append( view.render().el );
       if ( alias.isNew() ) {
@@ -250,7 +300,7 @@ var ENTER_KEY = 13;
       }
     },
 
-    addAll: function() {
+    addAll: function () {
       this.$list.html( '' );
       mercator.Aliases.each( this.addAlias, this );
     }
