@@ -23,6 +23,45 @@ require WPMU_PLUGIN_DIR . '/mercator-gui/gui.php';
 require WPMU_PLUGIN_DIR . '/mercator/mercator.php';
 ```
 
+### Features
+
+#### Network admin
+
+Provides a network level admin interface for super admins to manage domain aliases.
+
+You can enable / disable this feature using these filters:
+
+```php
+// Enabled
+add_filter( 'mercator.gui.network.enabled', '__return_true' );
+// Disabled
+add_filter( 'mercator.gui.network.enabled', '__return_false' );
+```
+
+#### Site admin
+
+If you want your users to be able to manage their custom domains you can use the
+site admin.
+
+```php
+// Enabled
+add_filter( 'mercator.gui.enabled', '__return_true' );
+// Disabled
+add_filter( 'mercator.gui.enabled', '__return_false' );
+```
+
+You can also provide some help text to your users if you enabled the per-site admin by
+defining the domain or IP address to create DNS records for in `wp-config.php`.
+
+We recommend using one strategy or the other and not both.
+
+```php
+// Target CNAME
+define( 'MERCATOR_DNS_CNAME', 'example.com' );
+// Target IP address
+define( 'MERCATOR_DNS_A', '12.34.56.78' );
+```
+
 ## License
 Mercator is licensed under the GPLv2 or later.
 
