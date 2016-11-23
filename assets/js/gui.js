@@ -39,8 +39,17 @@ var ENTER_KEY = 13;
 
     model.trigger( 'request', model, method );
 
-    $.ajax( opts );
+    $.ajax( opts )
+      .fail( function ( xhr ) {
+        model.trigger( 'invalid', model, xhr.responseJSON );
+        model.trigger( 'complete', model );
+      } );
   };
+
+  /**
+   * RegExp helper
+   */
+  mercator.subdomainRegExp = new RegExp( mercator.data.mainSite.domain + '$' );
 
   /**
    * Alias model, collection & view
@@ -58,7 +67,13 @@ var ENTER_KEY = 13;
       if ( !attrs.domain || !attrs.domain.match( /[a-z0-9._-]+\.[a-z0-9._-]+/i ) ) {
         return {
           attribute: 'domain',
-          message  : mercator.l10n.domainError
+          message  : mercator.l10n.aliasInvalidError
+        };
+      }
+      if ( attrs.domain && attrs.domain.match( mercator.subdomainRegExp ) ) {
+        return {
+          attribute: 'domain',
+          message  : mercator.l10n.aliasSubdomainError
         };
       }
     }
@@ -89,47 +104,65 @@ var ENTER_KEY = 13;
     template: _.template( $( '#tmpl-mercator-alias' ).html() ),
 
     events: {
-      'click .mercator-alias-update'      : 'updateAlias',
-      'click .mercator-alias-active'      : 'toggleAlias',
-      'click .mercator-alias-delete'      : 'areYouSure',
-      'click .mercator-alias-ays'         : 'deleteAlias',
-      'click .mercator-alias-cancel'      : 'cancelDelete',
-      'click .mercator-alias-make-primary': 'makePrimary',
-      'keyup .mercator-alias-domain'      : 'updateAlias'
+      'click .mercator-alias-update' : 'updateAlias',
+      'click .mercator-alias-active' : 'toggleAlias',
+      'click .mercator-alias-delete' : 'areYouSure',
+      'click .mercator-alias-ays'    : 'deleteAlias',
+      'click .mercator-alias-cancel' : 'cancelDelete',
+      'click .mercator-alias-primary': 'makePrimary',
+      'keyup .mercator-alias-domain' : 'updateAlias'
     },
 
     initialize: function () {
       this.listenTo( this.model, 'invalid', this.showError );
       this.listenTo( this.model, 'request', this.onRequest );
       this.listenTo( this.model, 'sync', this.onSync );
+      this.listenTo( this.model, 'sync', this.onComplete );
+      this.listenTo( this.model, 'complete', this.onComplete );
     },
 
     render: function () {
       this.$el.html( this.template( this.model.toJSON() ) );
       this.$domain = this.$( '.mercator-alias-domain' );
       this.$active = this.$( '.mercator-alias-active' );
+      this.$primary = this.$( '.mercator-alias-primary' );
+      this.$controls = this.$( '.mercator-alias-controls' );
       this.$update = this.$( '.mercator-alias-update' );
-      this.$ays    = this.$( '.mercator-alias-ays' );
+      this.$ays = this.$( '.mercator-alias-ays' );
       this.$delete = this.$( '.mercator-alias-delete' );
       this.$cancel = this.$( '.mercator-alias-cancel' );
+
+      // Only allow active aliases to be made primary
+      this.$primary.toggle( this.$active.is( ':checked' ) );
+
+      // Readonly and no controls if it's a network subdomain or subfolder
+      if ( this.model.get( 'domain' ).match( mercator.subdomainRegExp ) ) {
+        this.$domain.attr( 'readonly', 'readonly' );
+        this.$active.parent().remove();
+        this.$( 'button' ).not( this.$primary ).remove();
+      }
+
+      // Only show active if model not new
+      if ( this.model.isNew() ) {
+        this.$active.parent().hide();
+      }
+
       return this;
     },
 
     areYouSure: function () {
-      this.$delete.hide();
+      this.$( 'button' ).hide();
       this.$ays.show();
       this.$cancel.show();
     },
 
     deleteAlias: function () {
       this.model.destroy();
-      this.$el.fadeOut( 200, function () {
-        $( this ).remove();
-      } );
+      this.$el.fadeOut( 250 );
     },
 
     cancelDelete: function () {
-      this.$delete.show();
+      this.$( 'button' ).show();
       this.$ays.hide();
       this.$cancel.hide();
     },
@@ -152,6 +185,7 @@ var ENTER_KEY = 13;
     },
 
     toggleAlias: function () {
+      this.$primary.toggle( this.$active.is( ':checked' ) );
       this.model.set( {
         active: this.$active.is( ':checked' )
       } );
@@ -166,19 +200,21 @@ var ENTER_KEY = 13;
       this.$el
         .append(
           $( '<p/>', {
-            "class": "mercator-alias-error",
-            "style": "display:none;"
+            "class": "mercator-alias-error notice notice-error"
           } )
             .text( error.message )
-            .fadeIn( 200 )
+            .fadeIn( 250 )
+            .css( { display: 'inline-block' } )
         );
-      if ( 'domain' === error.attribute ) {
+      if ( 'domain' === error.attribute || ( error.data && 'domain' === error.data.attribute ) ) {
         this.$domain.focus().select();
       }
     },
 
     hideError: function () {
-      this.$el.find( '.mercator-alias-error' ).remove();
+      this.$el.find( '.mercator-alias-error' ).fadeOut( 250, function () {
+        $( this ).remove();
+      } );
     },
 
     onRequest: function () {
@@ -186,22 +222,27 @@ var ENTER_KEY = 13;
     },
 
     onSync: function () {
+      this.hideError();
+      this.$active.parent().show();
+      this.$domain.val( this.model.get( 'domain' ) );
+    },
+
+    onComplete: function () {
       this.$el.find( 'button, input' ).removeAttr( 'disabled' ).removeClass( 'disabled' );
     },
 
-    makePrimary: function() {
-      this.$el.fadeOut(250);
+    makePrimary: function () {
+      this.$el.fadeOut( 250 );
 
-      mercator.PrimaryData.at(0).set( {
-        domain: this.model.get('domain')
+      mercator.PrimaryData.at( 0 ).set( {
+        domain: this.model.get( 'domain' )
       } ).save( {
         mapping: this.model.id
       }, {
-        success: function() {
+        success: function () {
           mercator.Aliases.fetch();
         }
       } );
-
     }
 
   } );
@@ -239,13 +280,13 @@ var ENTER_KEY = 13;
 
     template: _.template( $( '#tmpl-mercator-primary-domain' ).html() ),
 
-    initialize: function() {
+    initialize: function () {
       this.listenTo( this.model, 'change', this.render );
-      this.listenTo( this.model, 'sync', this.render );
     },
 
     render: function () {
       this.$el.html( this.template( this.model.toJSON() ) );
+      this.$( '.mercator-primary-domain-value' ).fadeIn( 250 );
       return this;
     }
 
@@ -267,7 +308,7 @@ var ENTER_KEY = 13;
 
     initialize: function () {
       // Get one off primary domain view
-      this.primaryDomain = new mercator.PrimaryView( { model: mercator.PrimaryData.at(0) } );
+      this.primaryDomain = new mercator.PrimaryView( { model: mercator.PrimaryData.at( 0 ) } );
 
       // Create markup
       this.render();
@@ -294,7 +335,7 @@ var ENTER_KEY = 13;
 
     addAlias: function ( alias ) {
       var view = new mercator.AliasView( { model: alias } );
-      this.$list.append( view.render().el );
+      this.$list.append( view.render().$el.fadeIn( 250 ) );
       if ( alias.isNew() ) {
         view.$domain.focus();
       }

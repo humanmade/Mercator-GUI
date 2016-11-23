@@ -34,15 +34,17 @@ function enqueue_scripts( $hook ) {
 		'api'   => admin_url( '/admin-ajax.php' ),
 		'nonce' => wp_create_nonce( 'wp_rest' ),
 		'data'  => array(
-			'aliases' => array_map(
+			'aliases'  => array_map(
 				__NAMESPACE__ . '\\mapping_to_array',
 				Mapping::get_by_site( get_current_blog_id() )
 			),
-			'site'    => get_site( get_current_blog_id() ),
+			'site'     => get_site( get_current_blog_id() ),
+			'mainSite' => get_site( get_main_site_for_network() ),
 		),
 		'l10n'  => array(
-			'areYouSure'  => __( 'Are you sure?', 'mercator' ),
-			'domainError' => __( 'Domain cannot be empty and must be a valid host name', 'mercator' ),
+			'areYouSure'          => __( 'Are you sure?', 'mercator' ),
+			'aliasInvalidError'   => __( 'Domain cannot be empty and must be a valid host name', 'mercator' ),
+			'aliasSubdomainError' => __( 'You can only have one subdomain on the network', 'mercator' ),
 		),
 	);
 
@@ -50,7 +52,7 @@ function enqueue_scripts( $hook ) {
 		'mercator-gui',
 		plugins_url( 'assets/css/gui.css', __FILE__ ),
 		array(),
-		VERSION
+		filemtime( __DIR__ . '/assets/' )
 	);
 
 	wp_enqueue_script(
