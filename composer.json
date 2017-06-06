@@ -1,0 +1,22 @@
+{
+	"name": "humanmade/mercator-gui",
+	"description": "Admin interface component for Mercator.",
+	"homepage": "https://github.com/humanmade/Mercator-GUI",
+	"version": "1.0.0",
+	"keywords": [
+		"wordpress"
+	],
+	"license": "GPL-2.0+",
+	"authors": [
+		{
+			"name":"Human Made Limited",
+			"email":"support@humanmade.co.uk",
+			"homepage":"http://hmn.md/"
+		}
+	],
+	"type": "wordpress-muplugin",
+	"require": {
+		"composer/installers": "~1.0",
+    "humanmade/mercator": "~1.0"
+	 }
+}
