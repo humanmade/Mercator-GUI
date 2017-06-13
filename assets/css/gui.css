@@ -1,0 +1,47 @@
+.mercator-primary-domain {
+  margin: 20px 0;
+}
+
+.mercator-primary-domain-value {
+  font-size:   220%;
+  margin:      0;
+  font-weight: bold;
+}
+
+.mercator-primary-domain-wrap p {
+  font-style:    italic;
+  margin-bottom: 0;
+}
+
+.mercator-alias {
+  margin: 15px 0 20px;
+}
+
+.mercator-alias-domain {
+  width:          60%;
+  font-size:      120%;
+  padding:        10px;
+  margin-right:   5px;
+  vertical-align: middle;
+}
+
+.mercator-alias-controls {
+  overflow:       hidden;
+  vertical-align: middle;
+  margin-top:     5px;
+}
+
+.mercator-alias-active-label {
+  margin: 0 20px 0 5px;
+}
+
+.mercator-alias button:after {
+  display: inline-block;
+  width:   5px;
+}
+
+.mercator-alias-error {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  display: inline-block;
+}
