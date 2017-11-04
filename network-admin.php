@@ -477,7 +477,7 @@ function output_edit_page() {
 			</tr>
 			<tr>
 				<th scope="row">
-					<?php echo esc_html_x( 'Active', 'field name', 'mercator' ) ?>
+					<?php echo esc_html_x( 'Status', 'field name', 'mercator' ) ?>
 				</th>
 				<td>
 					<label>
