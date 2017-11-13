@@ -1,0 +1,4 @@
+# Ignore npm/grunt files
+npm-debug.log*
+node_modules/
+package-lock.json

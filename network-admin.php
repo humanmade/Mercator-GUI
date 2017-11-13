@@ -25,7 +25,7 @@ add_filter( 'plugin_row_meta',               __NAMESPACE__ . '\\output_sunrise_d
  * @return array
  */
 function add_site_list_column( $columns ) {
-	$columns['mercator_aliases'] = __( 'Aliases', 'mercator' );
+	$columns['mercator_aliases'] = __( 'Aliases', 'mercator-gui' );
 	return $columns;
 }
 
@@ -73,7 +73,7 @@ function maybe_output_site_tab() {
 	$class = ( ! empty( $_REQUEST['action'] ) && $_REQUEST['action'] === 'mercator-aliases' ) ? ' nav-tab-active' : '';
 
 ?>
-	<span id="mercator-aliases-nav-link" class="hide-if-no-js"><a href="<?php echo network_admin_url( 'admin.php?action=mercator-aliases' ) . '&id=' . $id ?>" class="nav-tab<?php echo $class ?>"><?php esc_html_e( 'Aliases', 'mercator' ) ?></a></span>
+	<span id="mercator-aliases-nav-link" class="hide-if-no-js"><a href="<?php echo network_admin_url( 'admin.php?action=mercator-aliases' ) . '&id=' . $id ?>" class="nav-tab<?php echo $class ?>"><?php esc_html_e( 'Aliases', 'mercator-gui' ) ?></a></span>
 	<script>jQuery(function ($) {
 		$( '#mercator-aliases-nav-link' ).appendTo( $( '.nav-tab-wrapper' ) );
 	});</script>
@@ -89,11 +89,11 @@ function maybe_output_site_tab() {
  */
 function output_page_header( $id, $messages = array() ) {
 	$site_url_no_http = preg_replace( '#^http(s)?://#', '', get_blogaddress_by_id( $id ) );
-	$title_site_url_linked = sprintf( __('Aliases: <a href="%1$s">%2$s</a>'), get_blogaddress_by_id( $id ), $site_url_no_http );
+	$title_site_url_linked = sprintf( __( 'Aliases: <a href="%1$s">%2$s</a>', 'mercator-gui' ), get_blogaddress_by_id( $id ), $site_url_no_http );
 
 	// Load the page header
 	global $title, $parent_file, $submenu_file;
-	$title = sprintf( __( 'Aliases: %s', 'mercator' ), $site_url_no_http );
+	$title = sprintf( __( 'Aliases: %s', 'mercator-gui' ), $site_url_no_http );
 	$parent_file = 'sites.php';
 	$submenu_file = 'sites.php';
 	require_once(ABSPATH . 'wp-admin/admin-header.php');
@@ -112,15 +112,15 @@ function output_page_header( $id, $messages = array() ) {
 
 		<?php echo $title_site_url_linked ?>
 
-		<a href="<?php echo esc_url( $add_link ) ?>" class="add-new-h2"><?php echo esc_html_x( 'Add New', 'alias', 'mercator' ) ?></a>
+		<a href="<?php echo esc_url( $add_link ) ?>" class="add-new-h2"><?php echo esc_html_x( 'Add New', 'alias', 'mercator-gui' ) ?></a>
 	</h2>
 	<h3 class="nav-tab-wrapper">
 <?php
 	$tabs = array(
-		'site-info'     => array( 'label' => __( 'Info' ),     'url' => 'site-info.php'     ),
-		'site-users'    => array( 'label' => __( 'Users' ),    'url' => 'site-users.php'    ),
-		'site-themes'   => array( 'label' => __( 'Themes' ),   'url' => 'site-themes.php'   ),
-		'site-settings' => array( 'label' => __( 'Settings' ), 'url' => 'site-settings.php' ),
+		'site-info'     => array( 'label' => __( 'Info', 'mercator-gui' ),     'url' => 'site-info.php'     ),
+		'site-users'    => array( 'label' => __( 'Users', 'mercator-gui' ),    'url' => 'site-users.php'    ),
+		'site-themes'   => array( 'label' => __( 'Themes', 'mercator-gui' ),   'url' => 'site-themes.php'   ),
+		'site-settings' => array( 'label' => __( 'Settings', 'mercator-gui' ), 'url' => 'site-settings.php' ),
 	);
 	foreach ( $tabs as $tab_id => $tab ) {
 		$class = ( $tab['url'] == $pagenow ) ? ' nav-tab-active' : '';
@@ -237,13 +237,13 @@ function output_list_page() {
 	$id = isset( $_REQUEST['id'] ) ? intval( $_REQUEST['id'] ) : 0;
 
 	if ( ! $id )
-		wp_die( __('Invalid site ID.') );
+		wp_die( __( 'Invalid site ID.', 'mercator-gui' ) );
 
 	$id = absint( $id );
 
 	$details = get_blog_details( $id );
 	if ( ! can_edit_network( $details->site_id ) || (int) $details->blog_id !== $id )
-		wp_die( __( 'You do not have permission to access this page.' ) );
+		wp_die( __( 'You do not have permission to access this page.', 'mercator-gui' ) );
 
 	$wp_list_table = new Alias_List_Table( array(
 		'site_id' => $id,
@@ -271,11 +271,11 @@ function output_list_page() {
 		// Special case for single, as it's not really a "bulk" action
 		if ( $processed === 1 ) {
 			$bulk_messages = array(
-				'activate'   => __( 'Activated %s',   'mercator' ),
-				'deactivate' => __( 'Deactivated %s', 'mercator' ),
-				'delete'     => __( 'Deleted %s',     'mercator' ),
-				'add'        => __( 'Created %s',     'mercator' ),
-				'edit'       => __( 'Updated %s',     'mercator' ),
+				'activate'   => __( 'Activated %s',   'mercator-gui' ),
+				'deactivate' => __( 'Deactivated %s', 'mercator-gui' ),
+				'delete'     => __( 'Deleted %s',     'mercator-gui' ),
+				'add'        => __( 'Created %s',     'mercator-gui' ),
+				'edit'       => __( 'Updated %s',     'mercator-gui' ),
 			);
 			if ( $did_action !== 'delete' ) {
 				$mapping = Mapping::get( $mappings[0] );
@@ -290,11 +290,11 @@ function output_list_page() {
 			// Note: we still use _n for languages which have special cases on
 			// e.g. 3, 5, 10, etc
 			$bulk_messages = array(
-				'activate'   => _n( '%s alias activated.',   '%s aliases activated.',  $processed ),
-				'deactivate' => _n( '%s alias deactivated.', '%s aliases deactiaved.', $processed ),
-				'delete'     => _n( '%s alias deleted.',     '%s aliases deleted.',    $processed ),
-				'add'        => _n( '%s alias created.',     '%s aliases created.',    $processed ),
-				'edit'       => _n( '%s alias updated.',     '%s aliases updated.',    $processed ),
+				'activate'   => _n( '%s alias activated.',   '%s aliases activated.',  $processed, 'mercator-gui' ),
+				'deactivate' => _n( '%s alias deactivated.', '%s aliases deactiaved.', $processed, 'mercator-gui' ),
+				'delete'     => _n( '%s alias deleted.',     '%s aliases deleted.',    $processed, 'mercator-gui' ),
+				'add'        => _n( '%s alias created.',     '%s aliases created.',    $processed, 'mercator-gui' ),
+				'edit'       => _n( '%s alias updated.',     '%s aliases updated.',    $processed, 'mercator-gui' ),
 			);
 			$placeholder = number_format_i18n( $processed );
 		}
@@ -328,11 +328,11 @@ function validate_alias_parameters( $params, $check_permission = true ) {
 
 	// Validate domain
 	if ( empty( $params['domain'] ) ) {
-		return new WP_Error( 'mercator.params.no_domain', __( 'Aliases require a domain name', 'mercator' ) );
+		return new WP_Error( 'mercator.params.no_domain', __( 'Aliases require a domain name', 'mercator-gui' ) );
 	}
 
 	if ( ! preg_match( '#^[a-z0-9\-.]+$#i', $params['domain'] ) ) {
-		return new WP_Error( 'mercator.params.domain_invalid_chars', __( 'Domains can only contain alphanumeric characters, dashes (-) and periods (.)', 'mercator' ) );
+		return new WP_Error( 'mercator.params.domain_invalid_chars', __( 'Domains can only contain alphanumeric characters, dashes (-) and periods (.)', 'mercator-gui' ) );
 	}
 
 	$valid['domain'] = $params['domain'];
@@ -340,7 +340,7 @@ function validate_alias_parameters( $params, $check_permission = true ) {
 	// Validate site ID
 	$valid['site']   = absint( $params['id'] );
 	if ( empty( $valid['site'] ) ) {
-		return new WP_Error( 'mercator.params.invalid_site', __( 'Invalid site ID', 'mercator' ) );
+		return new WP_Error( 'mercator.params.invalid_site', __( 'Invalid site ID', 'mercator-gui' ) );
 	}
 
 	if ( $check_permission ) {
@@ -348,7 +348,7 @@ function validate_alias_parameters( $params, $check_permission = true ) {
 
 		// Note: site_id is old terminology, referring to the network ID
 		if ( ! can_edit_network( $details->site_id ) ) {
-			return new WP_Error( 'mercator.params.cannot_edit', __( 'You do not have permission to edit this site', 'mercator' ) );
+			return new WP_Error( 'mercator.params.cannot_edit', __( 'You do not have permission to edit this site', 'mercator-gui' ) );
 		}
 	}
 
@@ -380,7 +380,7 @@ function handle_edit_page_submit( $id, $mapping ) {
 		$messages[] = $params->get_error_message();
 
 		if ( $params->get_error_code() === 'mercator.params.domain_invalid_chars' ) {
-			$messages[] = __( '<strong>Note</strong>: for internationalized domain names, use the ASCII form (e.g, <code>xn--bcher-kva.example</code>)', 'mercator' );
+			$messages[] = __( '<strong>Note</strong>: for internationalized domain names, use the ASCII form (e.g, <code>xn--bcher-kva.example</code>)', 'mercator-gui' );
 		}
 
 		return $messages;
@@ -424,13 +424,13 @@ function output_edit_page() {
 	$id = isset( $_REQUEST['id'] ) ? intval( $_REQUEST['id'] ) : 0;
 
 	if ( ! $id )
-		wp_die( __('Invalid site ID.') );
+		wp_die( __( 'Invalid site ID.', 'mercator-gui' ) );
 
 	$id = absint( $id );
 
 	$details = get_blog_details( $id );
 	if ( ! can_edit_network( $details->site_id ) || (int) $details->blog_id !== $id )
-		wp_die( __( 'You do not have permission to access this page.' ) );
+		wp_die( __( 'You do not have permission to access this page.', 'mercator-gui' ) );
 
 	// Are we editing?
 	$mapping = null;
@@ -439,7 +439,7 @@ function output_edit_page() {
 		$mapping_id = absint( $_REQUEST['mapping'] );
 		$mapping = Mapping::get( $mapping_id );
 		if ( is_wp_error( $mapping ) || empty( $mapping ) ) {
-			wp_die( __( 'Invalid alias ID.', 'mercator' ) );
+			wp_die( __( 'Invalid alias ID.', 'mercator-gui' ) );
 		}
 
 		$form_action = network_admin_url( 'admin.php?action=mercator-edit' );
@@ -467,7 +467,7 @@ function output_edit_page() {
 		<table class="form-table">
 			<tr>
 				<th scope="row">
-					<label for="mercator-domain"><?php echo esc_html_x( 'Domain Name', 'field name', 'mercator' ) ?></label>
+					<label for="mercator-domain"><?php echo esc_html_x( 'Domain Name', 'field name', 'mercator-gui' ) ?></label>
 				</th>
 				<td>
 					<input type="text" class="regular-text code"
@@ -477,14 +477,14 @@ function output_edit_page() {
 			</tr>
 			<tr>
 				<th scope="row">
-					<?php echo esc_html_x( 'Active', 'field name', 'mercator' ) ?>
+					<?php echo esc_html_x( 'Active', 'field name', 'mercator-gui' ) ?>
 				</th>
 				<td>
 					<label>
 						<input type="checkbox"
 							name="active" <?php checked( $active ) ?> />
 
-						<?php esc_html_e( 'Mark alias as active', 'mercator' ) ?>
+						<?php esc_html_e( 'Mark alias as active', 'mercator-gui' ) ?>
 					</label>
 				</td>
 			</tr>
@@ -495,12 +495,12 @@ function output_edit_page() {
 
 		if ( empty( $mapping ) ) {
 			wp_nonce_field( 'mercator-add-' . $id );
-			submit_button( __( 'Add Alias', 'mercator' ) );
+			submit_button( __( 'Add Alias', 'mercator-gui' ) );
 		}
 		else {
 			echo '<input type="hidden" name="mapping" value="' . esc_attr( $mapping->get_id() ) . '" />';
 			wp_nonce_field( 'mercator-edit-' . $mapping->get_id() );
-			submit_button( __( 'Save Alias', 'mercator' ) );
+			submit_button( __( 'Save Alias', 'mercator-gui' ) );
 		}
 
 		?>
@@ -525,13 +525,23 @@ function output_sunrise_dropin_note( $meta, $file, $data, $status ) {
 	}
 
 	$note = '<em>' . sprintf(
-		__( 'Enhanced by <a href="%s" title="%s">Mercator</a>', 'mercator' ),
+		__( 'Enhanced by <a href="%s" title="%s">Mercator</a>', 'mercator-gui' ),
 		'https://github.com/humanmade/Mercator',
 		sprintf(
-			__( 'Version %s', 'mercator' ),
+			__( 'Version %s', 'mercator-gui' ),
 			\Mercator\VERSION
 		)
 	) . '</em>';
 	array_unshift( $meta, $note );
 	return $meta;
+}
+
+/**
+* Load translations
+ */
+function load_textdomain() {
+    load_muplugin_textdomain(
+        'mercator-gui',
+        basename( dirname(__FILE__) ) . '/languages'
+    );
 }

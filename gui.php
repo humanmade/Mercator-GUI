@@ -38,4 +38,5 @@ function admin_init() {
 function load_network_admin() {
 	require_once __DIR__ . '/network-admin.php';
 	require_once __DIR__ . '/inc/admin/class-alias-list-table.php';
+	\Mercator\Admin\load_textdomain();
 }
