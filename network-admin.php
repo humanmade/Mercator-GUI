@@ -535,3 +535,13 @@ function output_sunrise_dropin_note( $meta, $file, $data, $status ) {
 	array_unshift( $meta, $note );
 	return $meta;
 }
+
+/**
+* Load translations
+ */
+function load_textdomain() {
+    load_muplugin_textdomain(
+        'mercator-gui',
+        basename( dirname(__FILE__) ) . '/languages'
+    );
+}
