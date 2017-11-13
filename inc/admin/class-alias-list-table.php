@@ -27,7 +27,7 @@ class Alias_List_Table extends WP_List_Table {
 		$id = $this->_args['site_id'];
 		$mappings = Mapping::get_by_site( $id );
 		if ( is_wp_error( $mappings ) ) {
-			\Mercator\warn_with_message( __( 'Could not fetch aliases for the site. This may indicate a database error.', 'mercator' ) );
+			\Mercator\warn_with_message( __( 'Could not fetch aliases for the site. This may indicate a database error.', 'mercator-gui' ) );
 		}
 		if ( ! empty( $mappings ) ) {
 			$this->items = $mappings;
@@ -42,8 +42,8 @@ class Alias_List_Table extends WP_List_Table {
 	public function get_columns() {
 		return array(
 			'cb'     => '<input type="checkbox" />',
-			'domain' => _x( 'Domain', 'mercator' ),
-			'active' => _x( 'Active', 'mercator' ),
+			'domain' => _x( 'Domain', 'Alias table header', 'mercator-gui' ),
+			'active' => _x( 'Active', 'Alias table header', 'mercator-gui' ),
 		);
 	}
 
@@ -58,9 +58,9 @@ class Alias_List_Table extends WP_List_Table {
 	 */
 	protected function get_bulk_actions() {
 		$actions = array(
-			'activate'   => _x( 'Activate', 'mercator' ),
-			'deactivate' => _x( 'Deactivate', 'mercator' ),
-			'delete'     => _x( 'Delete', 'mercator' ),
+			'activate'   => _x( 'Activate', 'Alias table bulk actions', 'mercator-gui' ),
+			'deactivate' => _x( 'Deactivate', 'Alias table bulk actions', 'mercator-gui' ),
+			'delete'     => _x( 'Delete', 'Alias table bulk actions', 'mercator-gui' ),
 		);
 
 		return apply_filters( 'mercator_alias_bulk_actions', $actions );
@@ -157,7 +157,7 @@ class Alias_List_Table extends WP_List_Table {
 			network_admin_url( 'admin.php' )
 		);
 		echo '<div class="alignright actions">';
-		echo '<a href="' . esc_url( $add_link ) . '" class="button-primary">' . esc_html_x( 'Add New', 'alias', 'mercator' ) . '</a>';
+		echo '<a href="' . esc_url( $add_link ) . '" class="button-primary">' . esc_html_x( 'Add New', 'alias', 'mercator-gui' ) . '</a>';
 		echo '</div>';
 	}
 
@@ -193,11 +193,11 @@ class Alias_List_Table extends WP_List_Table {
 			'_wpnonce' => wp_create_nonce( 'mercator-aliases-bulk-' . $this->_args['site_id'] ),
 		);
 		if ( ! $mapping->is_active() ) {
-			$text = __( 'Activate', 'mercator' );
+			$text = __( 'Activate', 'mercator-gui' );
 			$action = 'activate';
 		}
 		else {
-			$text = __( 'Deactivate', 'mercator' );
+			$text = __( 'Deactivate', 'mercator-gui' );
 			$action = 'deactivate';
 		}
 		$args['bulk_action'] = $action;
@@ -218,9 +218,9 @@ class Alias_List_Table extends WP_List_Table {
 		);
 
 		$actions = array(
-			'edit'   => sprintf( '<a href="%s">%s</a>', esc_url( $edit_link ), esc_html__( 'Edit', 'mercator' ) ),
+			'edit'   => sprintf( '<a href="%s">%s</a>', esc_url( $edit_link ), esc_html__( 'Edit' ) ),
 			$action  => sprintf( '<a href="%s">%s</a>', esc_url( $link ), esc_html( $text ) ),
-			'delete' => sprintf( '<a href="%s" class="submitdelete">%s</a>', esc_url( $delete_link ), esc_html__( 'Delete', 'mercator' ) ),
+			'delete' => sprintf( '<a href="%s" class="submitdelete">%s</a>', esc_url( $delete_link ), esc_html__( 'Delete' ) ),
 		);
 		$actions = apply_filters( 'mercator_alias_actions', $actions, $mapping );
 		$action_html = $this->row_actions( $actions, false );
@@ -237,8 +237,8 @@ class Alias_List_Table extends WP_List_Table {
 	protected function column_active( $mapping ) {
 		$active = $mapping->is_active();
 		if ( $active ) {
-			return esc_html__( 'Active', 'mercator' );
+			return esc_html__( 'Active', 'mercator-gui' );
 		}
-		return esc_html__( 'Inactive', 'mercator');
+		return esc_html__( 'Inactive', 'mercator-gui');
 	}
 }
