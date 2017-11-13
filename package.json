@@ -1,0 +1,14 @@
+{
+  "name": "mercator-gui",
+  "description": "GUI",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/humanmade/Mercator-GUI.git"
+  },
+  "license": "GPL-2.0+",
+  "devDependencies": {
+    "grunt-checktextdomain": "^1.0.1",
+    "grunt-wp-i18n": "^1.0.1",
+    "load-grunt-tasks": "^3.5.2"
+  }
+}
