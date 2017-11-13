@@ -102,9 +102,9 @@ class Alias_List_Table extends WP_List_Table {
 		if ( empty( $this->_actions ) )
 			return;
 
-		echo "<label for='bulk-action-selector-" . esc_attr( $which ) . "' class='screen-reader-text'>" . __( 'Select bulk action' ) . "</label>";
+		echo "<label for='bulk-action-selector-" . esc_attr( $which ) . "' class='screen-reader-text'>" . __( 'Select bulk action', 'mercator-gui' ) . "</label>";
 		echo "<select name='bulk_action$two' id='bulk-action-selector-" . esc_attr( $which ) . "'>\n";
-		echo "<option value='-1' selected='selected'>" . __( 'Bulk Actions' ) . "</option>\n";
+		echo "<option value='-1' selected='selected'>" . __( 'Bulk Actions', 'mercator-gui' ) . "</option>\n";
 
 		foreach ( $this->_actions as $name => $title ) {
 			$class = 'edit' == $name ? ' class="hide-if-no-js"' : '';
@@ -114,7 +114,7 @@ class Alias_List_Table extends WP_List_Table {
 
 		echo "</select>\n";
 
-		submit_button( __( 'Apply' ), 'action', false, false, array( 'id' => "doaction$two" ) );
+		submit_button( __( 'Apply', 'mercator-gui' ), 'action', false, false, array( 'id' => "doaction$two" ) );
 		echo "\n";
 	}
 
@@ -169,7 +169,7 @@ class Alias_List_Table extends WP_List_Table {
 	 */
 	protected function column_cb( $mapping ) {
 		return '<label class="screen-reader-text" for="cb-select-' . $mapping->get_id() . '">'
-			. sprintf( __( 'Select %s' ), esc_html( $mapping->get_domain() ) ) . '</label>'
+			. sprintf( __( 'Select %s', 'mercator-gui' ), esc_html( $mapping->get_domain() ) ) . '</label>'
 			. '<input type="checkbox" name="mappings[]" value="' . esc_attr( $mapping->get_id() )
 			. '" id="cb-select-' . esc_attr( $mapping->get_id() ) . '" />';
 	}
@@ -218,9 +218,9 @@ class Alias_List_Table extends WP_List_Table {
 		);
 
 		$actions = array(
-			'edit'   => sprintf( '<a href="%s">%s</a>', esc_url( $edit_link ), esc_html__( 'Edit' ) ),
+			'edit'   => sprintf( '<a href="%s">%s</a>', esc_url( $edit_link ), esc_html__( 'Edit', 'mercator-gui' ) ),
 			$action  => sprintf( '<a href="%s">%s</a>', esc_url( $link ), esc_html( $text ) ),
-			'delete' => sprintf( '<a href="%s" class="submitdelete">%s</a>', esc_url( $delete_link ), esc_html__( 'Delete' ) ),
+			'delete' => sprintf( '<a href="%s" class="submitdelete">%s</a>', esc_url( $delete_link ), esc_html__( 'Delete', 'mercator-gui' ) ),
 		);
 		$actions = apply_filters( 'mercator_alias_actions', $actions, $mapping );
 		$action_html = $this->row_actions( $actions, false );

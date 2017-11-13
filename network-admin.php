@@ -89,7 +89,7 @@ function maybe_output_site_tab() {
  */
 function output_page_header( $id, $messages = array() ) {
 	$site_url_no_http = preg_replace( '#^http(s)?://#', '', get_blogaddress_by_id( $id ) );
-	$title_site_url_linked = sprintf( __('Aliases: <a href="%1$s">%2$s</a>'), get_blogaddress_by_id( $id ), $site_url_no_http );
+	$title_site_url_linked = sprintf( __( 'Aliases: <a href="%1$s">%2$s</a>', 'mercator-gui' ), get_blogaddress_by_id( $id ), $site_url_no_http );
 
 	// Load the page header
 	global $title, $parent_file, $submenu_file;
@@ -117,10 +117,10 @@ function output_page_header( $id, $messages = array() ) {
 	<h3 class="nav-tab-wrapper">
 <?php
 	$tabs = array(
-		'site-info'     => array( 'label' => __( 'Info' ),     'url' => 'site-info.php'     ),
-		'site-users'    => array( 'label' => __( 'Users' ),    'url' => 'site-users.php'    ),
-		'site-themes'   => array( 'label' => __( 'Themes' ),   'url' => 'site-themes.php'   ),
-		'site-settings' => array( 'label' => __( 'Settings' ), 'url' => 'site-settings.php' ),
+		'site-info'     => array( 'label' => __( 'Info', 'mercator-gui' ),     'url' => 'site-info.php'     ),
+		'site-users'    => array( 'label' => __( 'Users', 'mercator-gui' ),    'url' => 'site-users.php'    ),
+		'site-themes'   => array( 'label' => __( 'Themes', 'mercator-gui' ),   'url' => 'site-themes.php'   ),
+		'site-settings' => array( 'label' => __( 'Settings', 'mercator-gui' ), 'url' => 'site-settings.php' ),
 	);
 	foreach ( $tabs as $tab_id => $tab ) {
 		$class = ( $tab['url'] == $pagenow ) ? ' nav-tab-active' : '';
@@ -237,13 +237,13 @@ function output_list_page() {
 	$id = isset( $_REQUEST['id'] ) ? intval( $_REQUEST['id'] ) : 0;
 
 	if ( ! $id )
-		wp_die( __('Invalid site ID.') );
+		wp_die( __( 'Invalid site ID.', 'mercator-gui' ) );
 
 	$id = absint( $id );
 
 	$details = get_blog_details( $id );
 	if ( ! can_edit_network( $details->site_id ) || (int) $details->blog_id !== $id )
-		wp_die( __( 'You do not have permission to access this page.' ) );
+		wp_die( __( 'You do not have permission to access this page.', 'mercator-gui' ) );
 
 	$wp_list_table = new Alias_List_Table( array(
 		'site_id' => $id,
@@ -271,11 +271,11 @@ function output_list_page() {
 		// Special case for single, as it's not really a "bulk" action
 		if ( $processed === 1 ) {
 			$bulk_messages = array(
-				'activate'   => __( 'Activated %s',   'mercator' ),
+				'activate'   => __( 'Activated %s',   'mercator-gui' ),
 				'deactivate' => __( 'Deactivated %s', 'mercator-gui' ),
-				'delete'     => __( 'Deleted %s',     'mercator' ),
-				'add'        => __( 'Created %s',     'mercator' ),
-				'edit'       => __( 'Updated %s',     'mercator' ),
+				'delete'     => __( 'Deleted %s',     'mercator-gui' ),
+				'add'        => __( 'Created %s',     'mercator-gui' ),
+				'edit'       => __( 'Updated %s',     'mercator-gui' ),
 			);
 			if ( $did_action !== 'delete' ) {
 				$mapping = Mapping::get( $mappings[0] );
@@ -290,11 +290,11 @@ function output_list_page() {
 			// Note: we still use _n for languages which have special cases on
 			// e.g. 3, 5, 10, etc
 			$bulk_messages = array(
-				'activate'   => _n( '%s alias activated.',   '%s aliases activated.',  $processed ),
-				'deactivate' => _n( '%s alias deactivated.', '%s aliases deactiaved.', $processed ),
-				'delete'     => _n( '%s alias deleted.',     '%s aliases deleted.',    $processed ),
-				'add'        => _n( '%s alias created.',     '%s aliases created.',    $processed ),
-				'edit'       => _n( '%s alias updated.',     '%s aliases updated.',    $processed ),
+				'activate'   => _n( '%s alias activated.',   '%s aliases activated.',  $processed, 'mercator-gui' ),
+				'deactivate' => _n( '%s alias deactivated.', '%s aliases deactiaved.', $processed, 'mercator-gui' ),
+				'delete'     => _n( '%s alias deleted.',     '%s aliases deleted.',    $processed, 'mercator-gui' ),
+				'add'        => _n( '%s alias created.',     '%s aliases created.',    $processed, 'mercator-gui' ),
+				'edit'       => _n( '%s alias updated.',     '%s aliases updated.',    $processed, 'mercator-gui' ),
 			);
 			$placeholder = number_format_i18n( $processed );
 		}
@@ -424,13 +424,13 @@ function output_edit_page() {
 	$id = isset( $_REQUEST['id'] ) ? intval( $_REQUEST['id'] ) : 0;
 
 	if ( ! $id )
-		wp_die( __('Invalid site ID.') );
+		wp_die( __( 'Invalid site ID.', 'mercator-gui' ) );
 
 	$id = absint( $id );
 
 	$details = get_blog_details( $id );
 	if ( ! can_edit_network( $details->site_id ) || (int) $details->blog_id !== $id )
-		wp_die( __( 'You do not have permission to access this page.' ) );
+		wp_die( __( 'You do not have permission to access this page.', 'mercator-gui' ) );
 
 	// Are we editing?
 	$mapping = null;
