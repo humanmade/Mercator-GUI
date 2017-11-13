@@ -23,6 +23,11 @@ require WPMU_PLUGIN_DIR . '/mercator-gui/gui.php';
 require WPMU_PLUGIN_DIR . '/mercator/mercator.php';
 ```
 
+## Development
+##### Translations:
+1. Install npm/grunt packages: Run `npm install`
+2. Update .pot file including check for text-domains: Run `grunt`
+
 ## License
 Mercator is licensed under the GPLv2 or later.
 
